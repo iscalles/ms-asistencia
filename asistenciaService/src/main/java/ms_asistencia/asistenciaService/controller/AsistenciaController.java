@@ -1,7 +1,7 @@
-package ms_asistencia.asistenciaservice.controller;
+package ms_asistencia.asistenciaService.controller;
 
-import ms_asistencia.asistenciaservice.model.Asistencia;
-import ms_asistencia.asistenciaservice.services.AsistenciaService;
+import ms_asistencia.asistenciaService.model.Asistencia;
+import ms_asistencia.asistenciaService.services.AsistenciaService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

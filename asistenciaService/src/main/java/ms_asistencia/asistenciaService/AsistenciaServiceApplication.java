@@ -1,13 +1,13 @@
-package ms_asistencia.asistenciaservice;
+package ms_asistencia.asistenciaService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MsAsistenciaApplication {
+public class AsistenciaServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MsAsistenciaApplication.class, args);
+		SpringApplication.run(AsistenciaServiceApplication.class, args);
 	}
 
 }

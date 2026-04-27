@@ -1,4 +1,4 @@
-package ms_asistencia.asistenciaservice.model;
+package ms_asistencia.asistenciaService.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

@@ -1,8 +1,8 @@
-package ms_asistencia.asistenciaservice.services.impl;
+package ms_asistencia.asistenciaService.services.impl;
 
-import ms_asistencia.asistenciaservice.model.Asistencia;
-import ms_asistencia.asistenciaservice.repository.AsistenciaRepository;
-import ms_asistencia.asistenciaservice.services.AsistenciaService;
+import ms_asistencia.asistenciaService.model.Asistencia;
+import ms_asistencia.asistenciaService.repository.AsistenciaRepository;
+import ms_asistencia.asistenciaService.services.AsistenciaService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

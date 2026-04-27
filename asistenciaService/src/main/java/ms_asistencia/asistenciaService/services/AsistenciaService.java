@@ -1,6 +1,6 @@
-package ms_asistencia.asistenciaservice.services;
+package ms_asistencia.asistenciaService.services;
 
-import ms_asistencia.asistenciaservice.model.Asistencia;
+import ms_asistencia.asistenciaService.model.Asistencia;
 
 import java.util.List;
 

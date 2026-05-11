@@ -19,22 +19,22 @@ public class Conducta {
     @Column(name = "fecha_conducta")
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate fechaConducta;
-    @Column(name = "docente_usuario_rut_usuario")
-    private String rutDocente;
-    @Column(name = "estudiante_usuario_rut_usuario")
-    private String rutEstudiante;
+    @Column(name = "DOCENTE_ID_USUARIO", nullable = false)
+    private Long docenteIdUsuario;
+    @Column(name = "ESTUDIANTE_ID_USUARIO")
+    private Long estudianteIdUsuario;
 
     public Conducta() {
 
     }
 
-    public Conducta(Long id_conducta, String tipoConducta, String descripcionConducta, LocalDate fechaConducta, String rutDocente, String rutEstudiante) {
+    public Conducta(Long id_conducta, String tipoConducta, String descripcionConducta, LocalDate fechaConducta, Long docenteIdUsuario, Long estudianteIdUsuario) {
         this.id_conducta = id_conducta;
         this.tipoConducta = tipoConducta;
         this.descripcionConducta = descripcionConducta;
         this.fechaConducta = fechaConducta;
-        this.rutDocente = rutDocente;
-        this.rutEstudiante = rutEstudiante;
+        this.docenteIdUsuario = docenteIdUsuario;
+        this.estudianteIdUsuario = estudianteIdUsuario;
     }
 
     public Long getId_conducta() {
@@ -69,19 +69,19 @@ public class Conducta {
         this.fechaConducta = fechaConducta;
     }
 
-    public String getRutDocente() {
-        return rutDocente;
+    public Long getDocenteIdUsuario() {
+        return docenteIdUsuario;
     }
 
-    public void setRutDocente(String rutDocente) {
-        this.rutDocente = rutDocente;
+    public void setDocenteIdUsuario(Long docenteIdUsuario) {
+        this.docenteIdUsuario = this.docenteIdUsuario;
     }
 
-    public String getRutEstudiante() {
-        return rutEstudiante;
+    public Long getEstudianteIdUsuario() {
+        return estudianteIdUsuario;
     }
 
-    public void setRutEstudiante(String rutEstudiante) {
-        this.rutEstudiante = rutEstudiante;
+    public void setEstudianteIdUsuario(Long estudianteIdUsuario) {
+        this.estudianteIdUsuario = estudianteIdUsuario;
     }
 }

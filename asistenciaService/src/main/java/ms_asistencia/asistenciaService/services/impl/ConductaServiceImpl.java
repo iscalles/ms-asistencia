@@ -42,8 +42,8 @@ public class ConductaServiceImpl implements ConductaService {
             conductaExistente.setTipoConducta(conducta.getTipoConducta());
             conductaExistente.setDescripcionConducta(conducta.getDescripcionConducta());
             conductaExistente.setFechaConducta(conducta.getFechaConducta());
-            conductaExistente.setRutDocente(conducta.getRutDocente());
-            conductaExistente.setRutEstudiante(conducta.getRutEstudiante());
+            conductaExistente.setDocenteIdUsuario(conducta.getDocenteIdUsuario());
+            conductaExistente.setEstudianteIdUsuario(conducta.getEstudianteIdUsuario());
             return conductaRepository.save(conductaExistente);
         } else {
             throw new RuntimeException("Conducta no encontrada con id: " + id);

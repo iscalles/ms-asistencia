@@ -74,7 +74,7 @@ public class Conducta {
     }
 
     public void setDocenteIdUsuario(Long docenteIdUsuario) {
-        this.docenteIdUsuario = this.docenteIdUsuario;
+        this.docenteIdUsuario = docenteIdUsuario;
     }
 
     public Long getEstudianteIdUsuario() {

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ConductaRepository extends JpaRepository<Conducta, Long> {
     List<Conducta> findAllByTipoConducta(String tipoConducta);
+    List<Conducta> findAllByEstudianteIdUsuario(Long estudianteIdUsuario);
 }

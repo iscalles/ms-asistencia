@@ -1,5 +1,7 @@
 package ms_asistencia.asistenciaService.controller;
 
+import ms_asistencia.asistenciaService.client.MatriculaDTOInternal;
+import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
 import ms_asistencia.asistenciaService.model.Asistencia;
 import ms_asistencia.asistenciaService.services.AsistenciaService;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +32,24 @@ public class AsistenciaController {
         return service.buscarAsistenciaPorEstado(estado);
     }
 
+    @GetMapping("/matricula/{idMatricula}")
+    List<Asistencia> buscarHistorialPorMatricula(@PathVariable Long idMatricula) {
+        return service.buscarHistorialPorMatricula(idMatricula);
+    }
+
+    @GetMapping("/curso/{idCurso}/roster")
+    List<MatriculaDTOInternal> obtenerRosterCurso(@PathVariable Long idCurso) {
+        return service.obtenerRosterCurso(idCurso);
+    }
+
     @PostMapping()
     Asistencia crearAsistencia(@RequestBody Asistencia asistencia) {
         return service.crearAsistencia(asistencia);
+    }
+
+    @PostMapping("/lote")
+    List<Asistencia> registrarAsistenciaLote(@RequestBody AsistenciaLoteRequestDTO request) {
+        return service.registrarAsistenciaLote(request);
     }
 
     @PutMapping("/{id}")

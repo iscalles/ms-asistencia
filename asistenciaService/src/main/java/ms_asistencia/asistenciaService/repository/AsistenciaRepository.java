@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
     List<Asistencia> findAllByEstadoAsistencia(String estadoAsistencia);
+    List<Asistencia> findAllByIdMatricula(Long idMatricula);
 }

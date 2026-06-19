@@ -1,12 +1,18 @@
 package ms_asistencia.asistenciaService.services.impl;
 
 import ms_asistencia.asistenciaService.client.AcademicoClient;
+import ms_asistencia.asistenciaService.client.MatriculaDTOInternal;
+import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
+import ms_asistencia.asistenciaService.dto.DetalleAsistenciaDTO;
 import ms_asistencia.asistenciaService.model.Asistencia;
 import ms_asistencia.asistenciaService.repository.AsistenciaRepository;
 import ms_asistencia.asistenciaService.services.AsistenciaService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class AsistenciaServiceImpl implements AsistenciaService {
@@ -34,6 +40,38 @@ public class AsistenciaServiceImpl implements AsistenciaService {
     @Override
     public List<Asistencia> buscarAsistenciaPorEstado(String estado) {
         return asistenciaRepository.findAllByEstadoAsistencia(estado);
+    }
+
+    @Override
+    public List<Asistencia> buscarHistorialPorMatricula(Long idMatricula) {
+        return asistenciaRepository.findAllByIdMatricula(idMatricula);
+    }
+
+    @Override
+    public List<MatriculaDTOInternal> obtenerRosterCurso(Long idCurso) {
+        return academicoClient.listarMatriculasPorCurso(idCurso);
+    }
+
+    @Override
+    public List<Asistencia> registrarAsistenciaLote(AsistenciaLoteRequestDTO request) {
+        List<MatriculaDTOInternal> roster = academicoClient.listarMatriculasPorCurso(request.getIdCurso());
+        Set<Long> matriculasValidas = roster.stream()
+                .map(MatriculaDTOInternal::getIdMatricula)
+                .collect(Collectors.toSet());
+
+        List<Asistencia> registros = new ArrayList<>();
+        for (DetalleAsistenciaDTO detalle : request.getDetalles()) {
+            if (!matriculasValidas.contains(detalle.getIdMatricula())) {
+                throw new RuntimeException("La matrícula " + detalle.getIdMatricula() + " no pertenece al curso " + request.getIdCurso());
+            }
+            Asistencia asistencia = new Asistencia();
+            asistencia.setIdMatricula(detalle.getIdMatricula());
+            asistencia.setFechaAsistencia(request.getFechaAsistencia());
+            asistencia.setEstadoAsistencia(detalle.getEstadoAsistencia());
+            asistencia.setJustificacionAsistencia(detalle.getJustificacionAsistencia());
+            registros.add(asistencia);
+        }
+        return asistenciaRepository.saveAll(registros);
     }
 
     @Override

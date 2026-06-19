@@ -30,6 +30,11 @@ public class ConductaController {
         return service.buscarConductaPorTipo(tipo);
     }
 
+    @GetMapping("/estudiante/{estudianteIdUsuario}")
+    List<Conducta> buscarHistorialPorEstudiante(@PathVariable Long estudianteIdUsuario) {
+        return service.buscarHistorialPorEstudiante(estudianteIdUsuario);
+    }
+
     @PostMapping()
     Conducta crearConducta(@RequestBody Conducta conducta){
         return service.crearConducta(conducta);

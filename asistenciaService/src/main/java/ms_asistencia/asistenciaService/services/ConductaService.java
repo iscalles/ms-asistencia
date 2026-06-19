@@ -8,6 +8,7 @@ public interface ConductaService {
     List<Conducta> listarConductas();
     Conducta buscarConductaPorId(Long id);
     List<Conducta> buscarConductaPorTipo(String tipo);
+    List<Conducta> buscarHistorialPorEstudiante(Long estudianteIdUsuario);
     Conducta crearConducta(Conducta conducta);
     Conducta actualizarConducta(Long id, Conducta conducta);
     void eliminarConducta(Long id);

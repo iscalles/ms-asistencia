@@ -42,6 +42,11 @@ public class ConductaServiceImpl implements ConductaService {
     }
 
     @Override
+    public List<Conducta> buscarHistorialPorEstudiante(Long estudianteIdUsuario) {
+        return conductaRepository.findAllByEstudianteIdUsuario(estudianteIdUsuario);
+    }
+
+    @Override
     public Conducta crearConducta(Conducta conducta) {
         validarUsuarios(conducta.getDocenteIdUsuario(), conducta.getEstudianteIdUsuario());
         return conductaRepository.save(conducta);

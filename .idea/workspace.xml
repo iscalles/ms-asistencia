@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97dc417b-d4f8-4614-bc64-58baeaba6409" name="Changes" comment="refactor: se actualiza el modelo de Conducta para que use IDs para docente y estudiante">
+    <list default="true" id="97dc417b-d4f8-4614-bc64-58baeaba6409" name="Changes" comment="feat: implementa nuevos endpoints para gestión de asistencia y conducta, incluyendo registro en lote">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/AcademicoClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/AcademicoClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/MatriculaDTOInternal.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/MatriculaDTOInternal.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/AsistenciaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/AsistenciaController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/ConductaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/ConductaController.java" afterDir="false" />
@@ -247,7 +246,7 @@
       <workItem from="1778362714784" duration="7000" />
       <workItem from="1778466457997" duration="920000" />
       <workItem from="1779048152192" duration="513000" />
-      <workItem from="1781825063594" duration="5737000" />
+      <workItem from="1781825063594" duration="10577000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: se actualiza el modelo de Conducta para que use IDs para docente y estudiante">
       <option name="closed" value="true" />
@@ -257,7 +256,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778467259813</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="feat: implementa nuevos endpoints para gestión de asistencia y conducta, incluyendo registro en lote">
+      <option name="closed" value="true" />
+      <created>1781838822116</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1781838822117</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -265,7 +272,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="refactor: se actualiza el modelo de Conducta para que use IDs para docente y estudiante" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: se actualiza el modelo de Conducta para que use IDs para docente y estudiante" />
+    <MESSAGE value="feat: implementa nuevos endpoints para gestión de asistencia y conducta, incluyendo registro en lote" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: implementa nuevos endpoints para gestión de asistencia y conducta, incluyendo registro en lote" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

@@ -1,12 +1,15 @@
 package ms_asistencia.asistenciaService.services.impl;
 
 import ms_asistencia.asistenciaService.client.UsuarioClient;
+import ms_asistencia.asistenciaService.client.UsuarioDTOInternal;
+import ms_asistencia.asistenciaService.dto.ConductaResponseDTO;
 import ms_asistencia.asistenciaService.model.Conducta;
 import ms_asistencia.asistenciaService.repository.ConductaRepository;
 import ms_asistencia.asistenciaService.services.ConductaService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ConductaServiceImpl implements ConductaService {
@@ -44,6 +47,31 @@ public class ConductaServiceImpl implements ConductaService {
     @Override
     public List<Conducta> buscarHistorialPorEstudiante(Long estudianteIdUsuario) {
         return conductaRepository.findAllByEstudianteIdUsuario(estudianteIdUsuario);
+    }
+
+    @Override
+    public List<ConductaResponseDTO> buscarHistorialPorEstudianteDTO(Long estudianteIdUsuario) {
+        return conductaRepository.findAllByEstudianteIdUsuario(estudianteIdUsuario)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ConductaResponseDTO toResponseDTO(Conducta c) {
+        ConductaResponseDTO dto = new ConductaResponseDTO();
+        dto.setIdConducta(c.getId_conducta());
+        dto.setTipoConducta(c.getTipoConducta());
+        dto.setDescripcionConducta(c.getDescripcionConducta());
+        dto.setFechaConducta(c.getFechaConducta());
+        dto.setDocenteIdUsuario(c.getDocenteIdUsuario());
+        dto.setEstudianteIdUsuario(c.getEstudianteIdUsuario());
+        try {
+            UsuarioDTOInternal docente = usuarioClient.obtenerUsuarioPorId(c.getDocenteIdUsuario());
+            dto.setNombreDocente(docente.getNombreCompleto());
+        } catch (Exception e) {
+            dto.setNombreDocente("Docente no disponible");
+        }
+        return dto;
     }
 
     @Override

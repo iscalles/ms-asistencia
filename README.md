@@ -84,6 +84,8 @@ spring.jpa.show-sql=true
 | GET | `/asistencia/estado/{estado}` | Filtrar por estado (presente / ausente / justificado) |
 | GET | `/asistencia/matricula/{idMatricula}` | Historial de asistencia de un alumno |
 | GET | `/asistencia/curso/{idCurso}/roster` | Lista de alumnos matriculados en un curso (consulta a ms-academico), usada para armar la planilla de toma de asistencia |
+| GET | `/asistencia/curso/{idCurso}/reporte-dia?fecha=dd-MM-yyyy` | Reporte de asistencia de un curso para una fecha puntual |
+| GET | `/asistencia/curso/{idCurso}/reporte-resumen?desde=dd-MM-yyyy&hasta=dd-MM-yyyy` | Reporte resumido (totales y % de asistencia) de un curso en un rango de fechas |
 | POST | `/asistencia` | Crear un registro de asistencia individual |
 | POST | `/asistencia/lote` | Registrar la asistencia de un curso completo en una fecha (varios alumnos en una sola petición) |
 | PUT | `/asistencia/{id}` | Actualizar un registro de asistencia |
@@ -108,6 +110,7 @@ spring.jpa.show-sql=true
 | GET | `/conducta/{id}` | Buscar anotación por ID |
 | GET | `/conducta/tipo/{tipo}` | Filtrar por tipo de anotación |
 | GET | `/conducta/estudiante/{estudianteIdUsuario}` | Historial de conducta de un alumno |
+| GET | `/conducta/curso/{idCurso}/reporte-resumen` | Reporte resumido de conducta (total anotaciones positivas/negativas) por alumno de un curso |
 | POST | `/conducta` | Registrar una anotación de conducta |
 | PUT | `/conducta/{id}` | Actualizar una anotación de conducta |
 | DELETE | `/conducta/{id}` | Eliminar una anotación de conducta |

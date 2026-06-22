@@ -1,5 +1,7 @@
 package ms_asistencia.asistenciaService.controller;
 
+import ms_asistencia.asistenciaService.dto.ReporteConductaAlumnoDTO;
+import ms_asistencia.asistenciaService.dto.ConductaResponseDTO;
 import ms_asistencia.asistenciaService.model.Conducta;
 import ms_asistencia.asistenciaService.services.ConductaService;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,16 @@ public class ConductaController {
     @GetMapping("/tipo/{tipo}")
     List<Conducta> buscarConductaPorTipo(@PathVariable String tipo){
         return service.buscarConductaPorTipo(tipo);
+    }
+
+    @GetMapping("/estudiante/{estudianteIdUsuario}")
+    List<ConductaResponseDTO> buscarHistorialPorEstudiante(@PathVariable Long estudianteIdUsuario) {
+        return service.buscarHistorialPorEstudianteDTO(estudianteIdUsuario);
+    }
+
+    @GetMapping("/curso/{idCurso}/reporte-resumen")
+    List<ReporteConductaAlumnoDTO> reporteResumenPorCurso(@PathVariable Long idCurso) {
+        return service.reporteResumenPorCurso(idCurso);
     }
 
     @PostMapping()

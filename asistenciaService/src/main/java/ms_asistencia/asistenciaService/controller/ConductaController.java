@@ -1,5 +1,6 @@
 package ms_asistencia.asistenciaService.controller;
 
+import ms_asistencia.asistenciaService.dto.ConductaResponseDTO;
 import ms_asistencia.asistenciaService.model.Conducta;
 import ms_asistencia.asistenciaService.services.ConductaService;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +32,8 @@ public class ConductaController {
     }
 
     @GetMapping("/estudiante/{estudianteIdUsuario}")
-    List<Conducta> buscarHistorialPorEstudiante(@PathVariable Long estudianteIdUsuario) {
-        return service.buscarHistorialPorEstudiante(estudianteIdUsuario);
+    List<ConductaResponseDTO> buscarHistorialPorEstudiante(@PathVariable Long estudianteIdUsuario) {
+        return service.buscarHistorialPorEstudianteDTO(estudianteIdUsuario);
     }
 
     @PostMapping()

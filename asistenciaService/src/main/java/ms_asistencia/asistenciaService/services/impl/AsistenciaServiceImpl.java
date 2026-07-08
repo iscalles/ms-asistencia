@@ -2,19 +2,28 @@ package ms_asistencia.asistenciaService.services.impl;
 
 import ms_asistencia.asistenciaService.client.AcademicoClient;
 import ms_asistencia.asistenciaService.client.MatriculaDTOInternal;
+import ms_asistencia.asistenciaService.client.NotificacionClient;
+import ms_asistencia.asistenciaService.client.NotificacionEventoRequest;
 import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
 import ms_asistencia.asistenciaService.dto.DetalleAsistenciaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDiaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaResumenDTO;
+import ms_asistencia.asistenciaService.dto.ValidacionFechaDTO;
 import ms_asistencia.asistenciaService.model.Asistencia;
 import ms_asistencia.asistenciaService.repository.AsistenciaRepository;
+import ms_asistencia.asistenciaService.repository.FechaExcluidaRepository;
+import ms_asistencia.asistenciaService.repository.PeriodoEscolarRepository;
 import ms_asistencia.asistenciaService.services.AsistenciaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,15 +32,73 @@ import java.util.stream.Collectors;
 @Service
 public class AsistenciaServiceImpl implements AsistenciaService {
 
+    private static final Logger log = LoggerFactory.getLogger(AsistenciaServiceImpl.class);
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final Set<String> ESTADOS_NOTIFICABLES = Set.of("ausente", "justificado");
 
     private final AsistenciaRepository asistenciaRepository;
+    private final FechaExcluidaRepository fechaExcluidaRepository;
+    private final PeriodoEscolarRepository periodoEscolarRepository;
     private final AcademicoClient academicoClient;
+    private final NotificacionClient notificacionClient;
 
     public AsistenciaServiceImpl(AsistenciaRepository asistenciaRepository,
-                                 AcademicoClient academicoClient) {
+                                 FechaExcluidaRepository fechaExcluidaRepository,
+                                 PeriodoEscolarRepository periodoEscolarRepository,
+                                 AcademicoClient academicoClient,
+                                 NotificacionClient notificacionClient) {
         this.asistenciaRepository = asistenciaRepository;
+        this.fechaExcluidaRepository = fechaExcluidaRepository;
+        this.periodoEscolarRepository = periodoEscolarRepository;
         this.academicoClient = academicoClient;
+        this.notificacionClient = notificacionClient;
+    }
+
+    // Best-effort: si ms-notificacion no responde, no debe impedir que la asistencia se guarde.
+    private void notificarSiCorresponde(Asistencia asistencia, MatriculaDTOInternal matricula) {
+        if (matricula == null || !ESTADOS_NOTIFICABLES.contains(
+                asistencia.getEstadoAsistencia() == null ? "" : asistencia.getEstadoAsistencia().toLowerCase())) {
+            return;
+        }
+        try {
+            String curso = matricula.getGradoCurso() != null
+                    ? matricula.getGradoCurso() + " " + matricula.getSeccionCurso()
+                    : null;
+
+            NotificacionEventoRequest evento = new NotificacionEventoRequest();
+            evento.setTipoNotificacion("ASISTENCIA");
+            evento.setEstudianteIdUsuario(matricula.getEstudianteIdUsuario());
+            evento.setIdReferencia(asistencia.getId_asistencia());
+            evento.setAsunto("Registro de asistencia: " + asistencia.getEstadoAsistencia());
+            evento.setMensaje("Se registró el estado \"" + asistencia.getEstadoAsistencia() + "\" el "
+                    + asistencia.getFechaAsistencia().format(FORMATO_FECHA)
+                    + (curso != null ? " en " + curso : "")
+                    + (asistencia.getJustificacionAsistencia() != null
+                        ? " (" + asistencia.getJustificacionAsistencia() + ")" : ""));
+            evento.setNotificarEstudiante(false);
+            evento.setNotificarApoderados(true);
+            notificacionClient.crearEvento(evento);
+        } catch (Exception e) {
+            log.warn("No se pudo notificar la asistencia {}: {}", asistencia.getId_asistencia(), e.getMessage());
+        }
+    }
+
+    @Override
+    public ValidacionFechaDTO validarFechaAsistencia(LocalDate fecha) {
+        DayOfWeek dia = fecha.getDayOfWeek();
+        if (dia == DayOfWeek.SATURDAY || dia == DayOfWeek.SUNDAY) {
+            return new ValidacionFechaDTO(false, "La fecha corresponde a un fin de semana.");
+        }
+        return fechaExcluidaRepository.findByFecha(fecha)
+                .map(fe -> new ValidacionFechaDTO(false, "Día no lectivo: " + fe.getDescripcion()))
+                .orElseGet(() -> {
+                    // Solo restringe por período si hay al menos uno configurado
+                    if (periodoEscolarRepository.count() > 0
+                            && periodoEscolarRepository.findPeriodoCubreFecha(fecha).isEmpty()) {
+                        return new ValidacionFechaDTO(false, "La fecha está fuera del período escolar configurado.");
+                    }
+                    return new ValidacionFechaDTO(true, null);
+                });
     }
 
     // Normaliza el estado a "Primera mayúscula, resto minúscula" (ej: "AUSENTE" -> "Ausente")
@@ -71,6 +138,11 @@ public class AsistenciaServiceImpl implements AsistenciaService {
     @Override
     @Transactional
     public List<Asistencia> registrarAsistenciaLote(AsistenciaLoteRequestDTO request) {
+        ValidacionFechaDTO validacion = validarFechaAsistencia(request.getFechaAsistencia());
+        if (!validacion.isValida()) {
+            throw new RuntimeException(validacion.getMotivo());
+        }
+
         List<MatriculaDTOInternal> roster = academicoClient.listarMatriculasPorCurso(request.getIdCurso());
         Set<Long> matriculasValidas = roster.stream()
                 .map(MatriculaDTOInternal::getIdMatricula)
@@ -92,15 +164,26 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         // Si ya existía asistencia tomada para este curso/fecha (ej: el docente guarda dos veces),
         // se reemplaza en vez de duplicar registros.
         asistenciaRepository.deleteAllByIdMatriculaInAndFechaAsistencia(matriculasValidas, request.getFechaAsistencia());
-        return asistenciaRepository.saveAll(registros);
+        List<Asistencia> guardadas = asistenciaRepository.saveAll(registros);
+
+        Map<Long, MatriculaDTOInternal> matriculaPorId = roster.stream()
+                .collect(Collectors.toMap(MatriculaDTOInternal::getIdMatricula, m -> m, (a, b) -> a, HashMap::new));
+        for (Asistencia guardada : guardadas) {
+            notificarSiCorresponde(guardada, matriculaPorId.get(guardada.getIdMatricula()));
+        }
+
+        return guardadas;
     }
 
     @Override
     public Asistencia crearAsistencia(Asistencia asistencia) {
-        // Valida que la matrícula existe en ms-academico antes de guardar
-        academicoClient.obtenerMatriculaPorId(asistencia.getIdMatricula());
+        // Valida que la matrícula existe en ms-academico antes de guardar (y aprovechamos
+        // la respuesta para saber a qué estudiante notificar)
+        MatriculaDTOInternal matricula = academicoClient.obtenerMatriculaPorId(asistencia.getIdMatricula());
         asistencia.setEstadoAsistencia(normalizarEstado(asistencia.getEstadoAsistencia()));
-        return asistenciaRepository.save(asistencia);
+        Asistencia guardada = asistenciaRepository.save(asistencia);
+        notificarSiCorresponde(guardada, matricula);
+        return guardada;
     }
 
     @Override

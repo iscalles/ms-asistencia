@@ -14,4 +14,7 @@ public interface AcademicoClient {
 
     @GetMapping("/matriculas/curso/{idCurso}")
     List<MatriculaDTOInternal> listarMatriculasPorCurso(@PathVariable("idCurso") Long idCurso);
+
+    @GetMapping("/matriculas/estudiante/{estudianteIdUsuario}/actual")
+    MatriculaDTOInternal obtenerMatriculaActualDelEstudiante(@PathVariable("estudianteIdUsuario") Long estudianteIdUsuario);
 }

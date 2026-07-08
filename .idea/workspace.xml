@@ -6,7 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="97dc417b-d4f8-4614-bc64-58baeaba6409" name="Changes" comment="feat: agrega nuevos endpoints para reportes de asistencia y conducta por curso">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/AcademicoClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/AcademicoClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/MatriculaDTOInternal.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/MatriculaDTOInternal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/AsistenciaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/AsistenciaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/AsistenciaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/AsistenciaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/AsistenciaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/AsistenciaServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/ConductaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/ConductaServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +106,7 @@
     &quot;Spring Boot.AsistenciaServiceApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.MsAsistenciaApplication.executor&quot;: &quot;Run&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/implementacion-libro-asistencia&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/notificaciones-internas&quot;,
     &quot;git.auto.fetch.suggestion.counter&quot;: &quot;1&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Herimar/IdeaProjects/ms-asistencia/asistenciaService/src/main&quot;,
@@ -239,6 +244,8 @@
       <workItem from="1778466457997" duration="920000" />
       <workItem from="1779048152192" duration="513000" />
       <workItem from="1781825063594" duration="22031000" />
+      <workItem from="1782855082955" duration="1746000" />
+      <workItem from="1783475446739" duration="2374000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: se actualiza el modelo de Conducta para que use IDs para docente y estudiante">
       <option name="closed" value="true" />

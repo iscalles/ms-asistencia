@@ -8,6 +8,8 @@ public class MatriculaDTOInternal {
     private String nombreEstudiante;
     private String rutEstudiante;
     private Long idCurso;
+    private String gradoCurso;
+    private String seccionCurso;
 
     public MatriculaDTOInternal() {}
 
@@ -28,4 +30,10 @@ public class MatriculaDTOInternal {
 
     public Long getIdCurso() { return idCurso; }
     public void setIdCurso(Long idCurso) { this.idCurso = idCurso; }
+
+    public String getGradoCurso() { return gradoCurso; }
+    public void setGradoCurso(String gradoCurso) { this.gradoCurso = gradoCurso; }
+
+    public String getSeccionCurso() { return seccionCurso; }
+    public void setSeccionCurso(String seccionCurso) { this.seccionCurso = seccionCurso; }
 }

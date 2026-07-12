@@ -85,20 +85,53 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Override
     public ValidacionFechaDTO validarFechaAsistencia(LocalDate fecha) {
+        return validarFechaAsistencia(fecha, null);
+    }
+
+    @Override
+    public ValidacionFechaDTO validarFechaAsistencia(LocalDate fecha, Long idCursoAsignatura) {
         DayOfWeek dia = fecha.getDayOfWeek();
         if (dia == DayOfWeek.SATURDAY || dia == DayOfWeek.SUNDAY) {
             return new ValidacionFechaDTO(false, "La fecha corresponde a un fin de semana.");
         }
-        return fechaExcluidaRepository.findByFecha(fecha)
+        ValidacionFechaDTO resultadoFecha = fechaExcluidaRepository.findByFecha(fecha)
                 .map(fe -> new ValidacionFechaDTO(false, "Día no lectivo: " + fe.getDescripcion()))
                 .orElseGet(() -> {
-                    // Solo restringe por período si hay al menos uno configurado
                     if (periodoEscolarRepository.count() > 0
                             && periodoEscolarRepository.findPeriodoCubreFecha(fecha).isEmpty()) {
                         return new ValidacionFechaDTO(false, "La fecha está fuera del período escolar configurado.");
                     }
                     return new ValidacionFechaDTO(true, null);
                 });
+
+        if (!resultadoFecha.isValida() || idCursoAsignatura == null) {
+            return resultadoFecha;
+        }
+
+        // Verificar que haya clase programada ese día para este CursoAsignatura (best-effort).
+        // Si no hay horario configurado (lista vacía), se permite registrar asistencia.
+        try {
+            List<String> diasClase = academicoClient.getDiasHorario(idCursoAsignatura);
+            if (!diasClase.isEmpty() && !diasClase.contains(dia.name())) {
+                return new ValidacionFechaDTO(false,
+                        "No hay clases de esta asignatura el " + nombreDia(dia) + ".");
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo verificar horario para cursoAsignatura {}: {}", idCursoAsignatura, e.getMessage());
+        }
+
+        return new ValidacionFechaDTO(true, null);
+    }
+
+    private String nombreDia(DayOfWeek dia) {
+        return switch (dia) {
+            case MONDAY    -> "lunes";
+            case TUESDAY   -> "martes";
+            case WEDNESDAY -> "miércoles";
+            case THURSDAY  -> "jueves";
+            case FRIDAY    -> "viernes";
+            default        -> dia.name().toLowerCase();
+        };
     }
 
     // Normaliza el estado a "Primera mayúscula, resto minúscula" (ej: "AUSENTE" -> "Ausente")

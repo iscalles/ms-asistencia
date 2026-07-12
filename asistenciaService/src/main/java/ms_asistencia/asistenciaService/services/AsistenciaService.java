@@ -23,6 +23,8 @@ public interface AsistenciaService {
 
     // ── Validación de fechas ────────────────────────────────────────────────────
     ValidacionFechaDTO validarFechaAsistencia(LocalDate fecha);
+    /** Valida la fecha + verifica que haya clase para el CursoAsignatura indicado ese día. */
+    ValidacionFechaDTO validarFechaAsistencia(LocalDate fecha, Long idCursoAsignatura);
 
     // ── Reportes administrativos ────────────────────────────────────────────────
     List<ReporteAsistenciaDiaDTO> reporteAsistenciaPorCursoYFecha(Long idCurso, LocalDate fecha);

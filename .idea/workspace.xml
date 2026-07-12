@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97dc417b-d4f8-4614-bc64-58baeaba6409" name="Changes" comment="feat: agrega nuevos endpoints para reportes de asistencia y conducta por curso">
+    <list default="true" id="97dc417b-d4f8-4614-bc64-58baeaba6409" name="Changes" comment="feat: agrega validación de fechas y notificaciones en el registro de asistencia y conducta">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/AcademicoClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/AcademicoClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/MatriculaDTOInternal.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/client/MatriculaDTOInternal.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/AsistenciaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/controller/AsistenciaController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/AsistenciaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/AsistenciaService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/AsistenciaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/AsistenciaServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/ConductaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/asistenciaService/src/main/java/ms_asistencia/asistenciaService/services/impl/ConductaServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +243,8 @@
       <workItem from="1779048152192" duration="513000" />
       <workItem from="1781825063594" duration="22031000" />
       <workItem from="1782855082955" duration="1746000" />
-      <workItem from="1783475446739" duration="2374000" />
+      <workItem from="1783475446739" duration="2494000" />
+      <workItem from="1783795914814" duration="1090000" />
     </task>
     <task id="LOCAL-00001" summary="refactor: se actualiza el modelo de Conducta para que use IDs para docente y estudiante">
       <option name="closed" value="true" />
@@ -271,7 +270,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781999478060</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="feat: agrega validación de fechas y notificaciones en el registro de asistencia y conducta">
+      <option name="closed" value="true" />
+      <created>1783481472332</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1783481472332</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -292,7 +299,8 @@
     <MESSAGE value="refactor: se actualiza el modelo de Conducta para que use IDs para docente y estudiante" />
     <MESSAGE value="feat: implementa nuevos endpoints para gestión de asistencia y conducta, incluyendo registro en lote" />
     <MESSAGE value="feat: agrega nuevos endpoints para reportes de asistencia y conducta por curso" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: agrega nuevos endpoints para reportes de asistencia y conducta por curso" />
+    <MESSAGE value="feat: agrega validación de fechas y notificaciones en el registro de asistencia y conducta" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: agrega validación de fechas y notificaciones en el registro de asistencia y conducta" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

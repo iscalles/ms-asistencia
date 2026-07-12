@@ -64,8 +64,9 @@ public class AsistenciaController {
 
     @GetMapping("/validar-fecha")
     ValidacionFechaDTO validarFecha(
-            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fecha) {
-        return service.validarFechaAsistencia(fecha);
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fecha,
+            @RequestParam(required = false) Long idCursoAsignatura) {
+        return service.validarFechaAsistencia(fecha, idCursoAsignatura);
     }
 
     @PostMapping()

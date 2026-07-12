@@ -6,6 +6,7 @@ import ms_asistencia.asistenciaService.client.NotificacionClient;
 import ms_asistencia.asistenciaService.client.NotificacionEventoRequest;
 import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
 import ms_asistencia.asistenciaService.dto.DetalleAsistenciaDTO;
+import ms_asistencia.asistenciaService.dto.ReporteAlumnoDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDiaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaResumenDTO;
 import ms_asistencia.asistenciaService.dto.ValidacionFechaDTO;
@@ -265,6 +266,37 @@ public class AsistenciaServiceImpl implements AsistenciaService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReporteAlumnoDTO> reporteAsistenciaPorAlumno(Long idCurso, LocalDate desde, LocalDate hasta) {
+        List<MatriculaDTOInternal> roster = academicoClient.listarMatriculasPorCurso(idCurso);
+        Set<Long> idsMatricula = roster.stream().map(MatriculaDTOInternal::getIdMatricula).collect(Collectors.toSet());
+
+        List<Asistencia> registros = asistenciaRepository
+                .findAllByIdMatriculaInAndFechaAsistenciaBetween(idsMatricula, desde, hasta);
+
+        Map<Long, List<Asistencia>> porMatricula = registros.stream()
+                .collect(Collectors.groupingBy(Asistencia::getIdMatricula));
+
+        return roster.stream().map(alumno -> {
+            List<Asistencia> asistAlumno = porMatricula.getOrDefault(alumno.getIdMatricula(), List.of());
+            long presentes   = asistAlumno.stream().filter(a -> "Presente".equalsIgnoreCase(a.getEstadoAsistencia())).count();
+            long ausentes    = asistAlumno.stream().filter(a -> "Ausente".equalsIgnoreCase(a.getEstadoAsistencia())).count();
+            long justificados = asistAlumno.stream().filter(a -> "Justificado".equalsIgnoreCase(a.getEstadoAsistencia())).count();
+            long total = presentes + ausentes + justificados;
+
+            ReporteAlumnoDTO dto = new ReporteAlumnoDTO();
+            dto.setIdMatricula(alumno.getIdMatricula());
+            dto.setEstudianteIdUsuario(alumno.getEstudianteIdUsuario());
+            dto.setNombreEstudiante(alumno.getNombreEstudiante());
+            dto.setRutEstudiante(alumno.getRutEstudiante());
+            dto.setTotalPresentes(presentes);
+            dto.setTotalAusentes(ausentes);
+            dto.setTotalJustificados(justificados);
+            dto.setPorcentajeAsistencia(total > 0 ? (presentes * 100.0) / total : 0.0);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Override

@@ -2,6 +2,7 @@ package ms_asistencia.asistenciaService.services;
 
 import ms_asistencia.asistenciaService.client.MatriculaDTOInternal;
 import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
+import ms_asistencia.asistenciaService.dto.ReporteAlumnoDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDiaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaResumenDTO;
 import ms_asistencia.asistenciaService.dto.ValidacionFechaDTO;
@@ -29,4 +30,5 @@ public interface AsistenciaService {
     // ── Reportes administrativos ────────────────────────────────────────────────
     List<ReporteAsistenciaDiaDTO> reporteAsistenciaPorCursoYFecha(Long idCurso, LocalDate fecha);
     ReporteAsistenciaResumenDTO reporteResumenPorCurso(Long idCurso, LocalDate desde, LocalDate hasta);
+    List<ReporteAlumnoDTO> reporteAsistenciaPorAlumno(Long idCurso, LocalDate desde, LocalDate hasta);
 }

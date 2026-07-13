@@ -1,95 +1,50 @@
-# ms-asistencia — Microservicio de Asistencia y Conducta
+# ms-asistencia — Colegio Bernardo O'Higgins
 
-Colegio Bernardo O'Higgins · Proyecto Libro de Clases Digital
-
-Microservicio que permite a los docentes registrar y consultar la asistencia y las anotaciones de conducta de sus alumnos. Es consumido por el BFF y se comunica con ms-academico (matrículas/cursos) y ms-usuario (docentes/estudiantes) mediante OpenFeign.
+Microservicio de asistencia y conducta del sistema **Libro de Clases Digital** (DSY1106 Fullstack III).  
+Permite registrar y consultar la asistencia diaria y las anotaciones de conducta de los alumnos, con validación de fechas hábiles y generación de reportes por curso.
 
 ---
 
 ## Responsabilidades
 
-- Registrar la asistencia diaria de un alumno (presente / ausente / justificado)
-- Tomar asistencia de un curso completo en una sola operación (registro en lote)
-- Consultar el historial de asistencia de un alumno
-- Registrar anotaciones de conducta (positivas/negativas) hechas por un docente a un alumno
-- Consultar el historial de conducta de un alumno
+- Registrar asistencia individual o en lote (curso completo en una fecha)
+- Validar que la fecha sea hábil (no finde, no fecha excluida, dentro del periodo escolar)
+- Generar reportes de asistencia por día, por alumno y resumen de curso
+- Registrar, consultar y reportar anotaciones de conducta (positivas/negativas)
+- Gestionar el calendario escolar: fechas excluidas y periodos escolares
+- Disparar notificaciones a través de ms-notificacion al registrar asistencia en lote
 
 ---
 
-## Requisitos previos
+## Dependencias con otros microservicios
 
-| Herramienta | Versión |
-|---|---|
-| Java JDK | 21 |
-| Maven | 3.8 o superior |
-| Oracle Autonomous Database | Wallet configurado |
-| ms-academico | Corriendo en `http://localhost:8083` |
-| ms-usuario | Corriendo en `http://localhost:8081` |
-
----
-
-## Instalación y ejecución
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/iscalles/ms-asistencia.git
-cd ms-asistencia/asistenciaService
-
-# 2. Copiar el wallet de Oracle a la ruta configurada
-# El wallet debe estar en:
-# src/main/resources/wallet/Wallet_proyectoLibroAsistencia/
-
-# 3. Compilar
-mvn clean package -DskipTests
-
-# 4. Ejecutar
-mvn spring-boot:run
 ```
-
----
-
-## Configuración (`application.properties`)
-
-```properties
-spring.application.name=asistenciaService
-server.port=8084
-
-# Microservicios con los que se integra via OpenFeign
-ms-academico.url=http://localhost:8083
-ms-usuario.url=http://localhost:8081
-
-# Base de datos Oracle (Autonomous Database)
-spring.datasource.url=jdbc:oracle:thin:@proyectolibroasistencia_high?TNS_ADMIN=<ruta-wallet>
-spring.datasource.username=ms_asistencia
-spring.datasource.password=<contraseña>
-spring.datasource.driver-class-name=oracle.jdbc.driver.OracleDriver
-
-# JPA / Hibernate
-spring.jpa.hibernate.ddl-auto=validate
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.OracleDialect
-spring.jpa.show-sql=true
+ms-asistencia → OpenFeign → ms-academico    (8083) → valida matrículas, obtiene roster del curso
+ms-asistencia → OpenFeign → ms-usuario      (8081) → valida docentes y estudiantes
+ms-asistencia → OpenFeign → ms-notificacion (8085) → notifica inasistencias a estudiante/apoderados
 ```
-
-> **Seguridad:** no subir credenciales reales al repositorio. `application.properties` no está versionado — cada integrante lo configura localmente.
 
 ---
 
 ## Endpoints REST
 
-### Asistencia (`/asistencia`)
+### Asistencia — `/asistencia` (Puerto 8084)
+
 | Método | Ruta | Descripción |
 |---|---|---|
-| GET | `/asistencia` | Listar toda la asistencia |
-| GET | `/asistencia/{id}` | Buscar registro de asistencia por ID |
-| GET | `/asistencia/estado/{estado}` | Filtrar por estado (presente / ausente / justificado) |
-| GET | `/asistencia/matricula/{idMatricula}` | Historial de asistencia de un alumno |
-| GET | `/asistencia/curso/{idCurso}/roster` | Lista de alumnos matriculados en un curso (consulta a ms-academico), usada para armar la planilla de toma de asistencia |
-| GET | `/asistencia/curso/{idCurso}/reporte-dia?fecha=dd-MM-yyyy` | Reporte de asistencia de un curso para una fecha puntual |
-| GET | `/asistencia/curso/{idCurso}/reporte-resumen?desde=dd-MM-yyyy&hasta=dd-MM-yyyy` | Reporte resumido (totales y % de asistencia) de un curso en un rango de fechas |
-| POST | `/asistencia` | Crear un registro de asistencia individual |
-| POST | `/asistencia/lote` | Registrar la asistencia de un curso completo en una fecha (varios alumnos en una sola petición) |
-| PUT | `/asistencia/{id}` | Actualizar un registro de asistencia |
-| DELETE | `/asistencia/{id}` | Eliminar un registro de asistencia |
+| `GET` | `/asistencia` | Lista todos los registros de asistencia |
+| `GET` | `/asistencia/{id}` | Busca un registro por ID |
+| `GET` | `/asistencia/estado/{estado}` | Filtra por estado (`presente`, `ausente`, `justificado`) |
+| `GET` | `/asistencia/matricula/{idMatricula}` | Historial de asistencia de un alumno |
+| `GET` | `/asistencia/curso/{idCurso}/roster` | Lista de alumnos matriculados en el curso (desde ms-academico) |
+| `GET` | `/asistencia/curso/{idCurso}/reporte-dia?fecha=dd-MM-yyyy` | Reporte de asistencia del curso para una fecha |
+| `GET` | `/asistencia/curso/{idCurso}/reporte-por-alumno?desde=dd-MM-yyyy&hasta=dd-MM-yyyy` | Reporte de asistencia por alumno en un rango de fechas |
+| `GET` | `/asistencia/curso/{idCurso}/reporte-resumen?desde=dd-MM-yyyy&hasta=dd-MM-yyyy` | Totales y porcentaje de asistencia del curso |
+| `GET` | `/asistencia/validar-fecha?fecha=dd-MM-yyyy` | Valida si una fecha es hábil para tomar asistencia |
+| `POST` | `/asistencia` | Crea un registro de asistencia individual |
+| `POST` | `/asistencia/lote` | Registra la asistencia de un curso completo en una fecha |
+| `PUT` | `/asistencia/{id}` | Actualiza un registro de asistencia |
+| `DELETE` | `/asistencia/{id}` | Elimina un registro de asistencia |
 
 **Body de `POST /asistencia/lote`:**
 ```json
@@ -103,40 +58,97 @@ spring.jpa.show-sql=true
 }
 ```
 
-### Conducta (`/conducta`)
+### Conducta — `/conducta`
+
 | Método | Ruta | Descripción |
 |---|---|---|
-| GET | `/conducta` | Listar todas las anotaciones de conducta |
-| GET | `/conducta/{id}` | Buscar anotación por ID |
-| GET | `/conducta/tipo/{tipo}` | Filtrar por tipo de anotación |
-| GET | `/conducta/estudiante/{estudianteIdUsuario}` | Historial de conducta de un alumno |
-| GET | `/conducta/curso/{idCurso}/reporte-resumen` | Reporte resumido de conducta (total anotaciones positivas/negativas) por alumno de un curso |
-| POST | `/conducta` | Registrar una anotación de conducta |
-| PUT | `/conducta/{id}` | Actualizar una anotación de conducta |
-| DELETE | `/conducta/{id}` | Eliminar una anotación de conducta |
+| `GET` | `/conducta` | Lista todas las anotaciones |
+| `GET` | `/conducta/{id}` | Busca una anotación por ID |
+| `GET` | `/conducta/tipo/{tipo}` | Filtra por tipo de anotación |
+| `GET` | `/conducta/estudiante/{estudianteIdUsuario}` | Historial de conducta de un alumno |
+| `GET` | `/conducta/curso/{idCurso}/reporte-resumen` | Totales de anotaciones positivas/negativas por alumno del curso |
+| `POST` | `/conducta` | Registra una anotación de conducta |
+| `PUT` | `/conducta/{id}` | Actualiza una anotación |
+| `DELETE` | `/conducta/{id}` | Elimina una anotación |
+
+### Fechas Excluidas — `/fechas-excluidas`
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/fechas-excluidas` | Lista todas las fechas excluidas (feriados, eventos) ordenadas por fecha |
+| `POST` | `/fechas-excluidas` | Agrega una fecha excluida |
+| `DELETE` | `/fechas-excluidas/{id}` | Elimina una fecha excluida |
+
+### Periodos Escolares — `/periodos-escolares`
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/periodos-escolares` | Lista todos los periodos escolares (orden desc por fecha inicio) |
+| `POST` | `/periodos-escolares` | Agrega un periodo escolar |
+| `DELETE` | `/periodos-escolares/{id}` | Elimina un periodo escolar |
 
 ---
 
-## Modelo de datos (tablas en `ms_asistencia`)
+## Validación de fecha hábil
 
-| Tabla | Descripción |
-|---|---|
-| `ASISTENCIA` | Estado de asistencia (presente/ausente/justificado) de un alumno en una fecha, referenciando su matrícula en ms-academico |
-| `CONDUCTA` | Anotación de conducta hecha por un docente a un alumno, con tipo, descripción y fecha |
+Antes de registrar asistencia (individual o en lote), el servicio valida que la fecha:
 
-> `ASISTENCIA.MATRICULA_ID_MATRICULA` y `CONDUCTA.DOCENTE_ID_USUARIO` / `ESTUDIANTE_ID_USUARIO` son referencias externas (no FK reales), ya que apuntan a esquemas de otros microservicios. La integridad se valida en tiempo de ejecución vía OpenFeign.
+1. No sea sábado ni domingo
+2. No esté en la tabla `FECHA_EXCLUIDA` (feriados, suspensiones)
+3. Esté dentro de un `PERIODO_ESCOLAR` activo
+
+Si alguna condición falla, retorna `{ "esValida": false, "motivo": "..." }`.
 
 ---
 
-## Comunicación con otros microservicios
+## Configuración
 
-```
-ms-asistencia → OpenFeign → ms-academico (8083) → /matriculas/{id}, /matriculas/curso/{idCurso}
-ms-asistencia → OpenFeign → ms-usuario (8081)   → /usuario/interno/{idUsuario}
+```properties
+# application.properties
+spring.application.name=asistenciaService
+server.port=8084
+
+ms-academico.url=http://localhost:8083
+ms-usuario.url=http://localhost:8081
+ms-notificacion.url=http://localhost:8085
+
+spring.datasource.url=jdbc:oracle:thin:@proyectolibroasistencia_high?TNS_ADMIN=<ruta_wallet>
+spring.datasource.username=ms_asistencia
+spring.datasource.driver-class-name=oracle.jdbc.driver.OracleDriver
+
+# Pool reducido (tier gratuito compartido entre microservicios)
+spring.datasource.hikari.maximum-pool-size=3
+spring.datasource.hikari.minimum-idle=1
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.OracleDialect
 ```
 
-- `AcademicoClient`: valida que una matrícula exista al registrar asistencia, y obtiene el roster de un curso para el registro en lote.
-- `UsuarioClient`: valida que el docente y el estudiante existan al registrar una anotación de conducta.
+---
+
+## Ejecución
+
+```bash
+# Desde la carpeta asistenciaService/
+./mvnw spring-boot:run
+```
+
+> Requiere conectividad con Oracle Autonomous Database y el Wallet configurado.
+
+---
+
+## Tests unitarios
+
+```bash
+./mvnw test -Dtest="AsistenciaServiceImplTest,ConductaServiceImplTest" -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+| Clase | Tests | Casos cubiertos |
+|---|---|---|
+| `AsistenciaServiceImplTest` | 17 | Validación de fechas (sábado, domingo, día hábil), buscar por ID, eliminar, filtrar por estado, reportes por alumno (0%, 50%, 100%), reporte resumen, reporte día, registro en lote con validaciones |
+| `ConductaServiceImplTest` | 8 | Listar, buscar por ID, eliminar (existente y no existente), reporte resumen con positivas/negativas, actualizar no existente |
+
+Los tests usan `@ExtendWith(MockitoExtension.class)` — no requieren base de datos ni Spring context.
 
 ---
 
@@ -144,19 +156,21 @@ ms-asistencia → OpenFeign → ms-usuario (8081)   → /usuario/interno/{idUsua
 
 | Patrón | Implementación |
 |---|---|
-| **Repository** | Un repositorio JPA por entidad (`AsistenciaRepository`, `ConductaRepository`) |
+| **Repository** | Un repositorio JPA por entidad (`AsistenciaRepository`, `ConductaRepository`, `FechaExcluidaRepository`, `PeriodoEscolarRepository`) |
 | **Service Layer** | Interfaces de servicio con implementaciones separadas (`ServiceImpl`) |
-| **DTO** | `AsistenciaLoteRequestDTO` / `DetalleAsistenciaDTO` para el registro en lote; `*DTOInternal` para las respuestas de otros microservicios |
-| **Proxy (OpenFeign)** | `AcademicoClient` y `UsuarioClient` para validar entidades externas |
-| **Exception Handler** | `@RestControllerAdvice` (`GlobalExceptionHandler`) — respuestas de error consistentes, sin HTTP 500 genéricos |
+| **DTO** | `AsistenciaLoteRequestDTO` / `DetalleAsistenciaDTO` para registro en lote; DTOs de reporte (`ReporteAlumnoDTO`, `ReporteAsistenciaDiaDTO`, `ReporteAsistenciaResumenDTO`, `ReporteConductaAlumnoDTO`) |
+| **Proxy (OpenFeign)** | `AcademicoClient`, `UsuarioClient`, `NotificacionClient` para comunicación con otros MS |
+| **Exception Handler** | `@RestControllerAdvice` (`GlobalExceptionHandler`) — respuestas de error consistentes |
 
 ---
 
-## Tecnologías
+## Stack tecnológico
 
-- Spring Boot 3.2.12
-- Java 21
-- Spring Data JPA + Hibernate
-- Oracle Autonomous Database (esquema `ms_asistencia`)
-- OpenFeign (comunicación con ms-academico y ms-usuario)
-- Maven (arquetipo `spring-boot-starter-parent`)
+| Tecnología | Versión | Uso |
+|---|---|---|
+| Java | 21 | Lenguaje |
+| Spring Boot | 3.2.12 | Framework base |
+| Spring Data JPA | 3.x | Acceso a base de datos |
+| Oracle Autonomous DB | — | Persistencia (esquema `ms_asistencia`) |
+| OpenFeign | (via spring-cloud) | Comunicación con ms-academico, ms-usuario, ms-notificacion |
+| JUnit 5 + Mockito | (via spring-boot-starter-test) | Tests unitarios |

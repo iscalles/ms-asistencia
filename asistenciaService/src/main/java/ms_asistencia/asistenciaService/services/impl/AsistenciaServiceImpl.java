@@ -7,6 +7,7 @@ import ms_asistencia.asistenciaService.client.NotificacionEventoRequest;
 import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
 import ms_asistencia.asistenciaService.dto.DetalleAsistenciaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAlumnoDTO;
+import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDetalleDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDiaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaResumenDTO;
 import ms_asistencia.asistenciaService.dto.ValidacionFechaDTO;
@@ -25,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -319,5 +321,32 @@ public class AsistenciaServiceImpl implements AsistenciaService {
                 ? 0
                 : (dto.getTotalPresentes() * 100.0) / dto.getTotalRegistros());
         return dto;
+    }
+
+    @Override
+    public List<ReporteAsistenciaDetalleDTO> reporteDetallePorCurso(Long idCurso, LocalDate desde, LocalDate hasta) {
+        List<MatriculaDTOInternal> roster = academicoClient.listarMatriculasPorCurso(idCurso);
+        Set<Long> idsMatricula = roster.stream().map(MatriculaDTOInternal::getIdMatricula).collect(Collectors.toSet());
+        Map<Long, MatriculaDTOInternal> matriculaPorId = roster.stream()
+                .collect(Collectors.toMap(MatriculaDTOInternal::getIdMatricula, m -> m, (a, b) -> a, HashMap::new));
+
+        List<Asistencia> registros = asistenciaRepository
+                .findAllByIdMatriculaInAndFechaAsistenciaBetween(idsMatricula, desde, hasta);
+
+        return registros.stream()
+                .map(registro -> {
+                    MatriculaDTOInternal alumno = matriculaPorId.get(registro.getIdMatricula());
+                    return new ReporteAsistenciaDetalleDTO(
+                            registro.getFechaAsistencia().format(FORMATO_FECHA),
+                            registro.getIdMatricula(),
+                            alumno != null ? alumno.getNombreEstudiante() : null,
+                            alumno != null ? alumno.getRutEstudiante() : null,
+                            registro.getEstadoAsistencia(),
+                            registro.getJustificacionAsistencia()
+                    );
+                })
+                .sorted(Comparator.comparing(ReporteAsistenciaDetalleDTO::getFecha, Comparator.comparing(f -> LocalDate.parse(f, FORMATO_FECHA)))
+                        .thenComparing(ReporteAsistenciaDetalleDTO::getNombreEstudiante, Comparator.nullsLast(Comparator.naturalOrder())))
+                .collect(Collectors.toList());
     }
 }

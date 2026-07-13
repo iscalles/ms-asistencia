@@ -3,6 +3,7 @@ package ms_asistencia.asistenciaService.controller;
 import ms_asistencia.asistenciaService.client.MatriculaDTOInternal;
 import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAlumnoDTO;
+import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDetalleDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDiaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaResumenDTO;
 import ms_asistencia.asistenciaService.dto.ValidacionFechaDTO;
@@ -69,6 +70,14 @@ public class AsistenciaController {
             @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate desde,
             @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate hasta) {
         return service.reporteResumenPorCurso(idCurso, desde, hasta);
+    }
+
+    @GetMapping("/curso/{idCurso}/reporte-detalle")
+    List<ReporteAsistenciaDetalleDTO> reporteDetallePorCurso(
+            @PathVariable Long idCurso,
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate desde,
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate hasta) {
+        return service.reporteDetallePorCurso(idCurso, desde, hasta);
     }
 
     @GetMapping("/validar-fecha")

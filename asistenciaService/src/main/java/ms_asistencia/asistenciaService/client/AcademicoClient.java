@@ -14,4 +14,11 @@ public interface AcademicoClient {
 
     @GetMapping("/matriculas/curso/{idCurso}")
     List<MatriculaDTOInternal> listarMatriculasPorCurso(@PathVariable("idCurso") Long idCurso);
+
+    @GetMapping("/matriculas/estudiante/{estudianteIdUsuario}/actual")
+    MatriculaDTOInternal obtenerMatriculaActualDelEstudiante(@PathVariable("estudianteIdUsuario") Long estudianteIdUsuario);
+
+    /** Devuelve los días de clase configurados para un CursoAsignatura (p.ej. ["MONDAY","WEDNESDAY"]). */
+    @GetMapping("/horario-clase/curso-asignatura/{idCursoAsignatura}/dias")
+    List<String> getDiasHorario(@PathVariable("idCursoAsignatura") Long idCursoAsignatura);
 }

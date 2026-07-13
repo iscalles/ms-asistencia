@@ -2,8 +2,10 @@ package ms_asistencia.asistenciaService.controller;
 
 import ms_asistencia.asistenciaService.client.MatriculaDTOInternal;
 import ms_asistencia.asistenciaService.dto.AsistenciaLoteRequestDTO;
+import ms_asistencia.asistenciaService.dto.ReporteAlumnoDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaDiaDTO;
 import ms_asistencia.asistenciaService.dto.ReporteAsistenciaResumenDTO;
+import ms_asistencia.asistenciaService.dto.ValidacionFechaDTO;
 import ms_asistencia.asistenciaService.model.Asistencia;
 import ms_asistencia.asistenciaService.services.AsistenciaService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -53,12 +55,27 @@ public class AsistenciaController {
         return service.reporteAsistenciaPorCursoYFecha(idCurso, fecha);
     }
 
+    @GetMapping("/curso/{idCurso}/reporte-por-alumno")
+    List<ReporteAlumnoDTO> reporteAsistenciaPorAlumno(
+            @PathVariable Long idCurso,
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate desde,
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate hasta) {
+        return service.reporteAsistenciaPorAlumno(idCurso, desde, hasta);
+    }
+
     @GetMapping("/curso/{idCurso}/reporte-resumen")
     ReporteAsistenciaResumenDTO reporteResumenPorCurso(
             @PathVariable Long idCurso,
             @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate desde,
             @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate hasta) {
         return service.reporteResumenPorCurso(idCurso, desde, hasta);
+    }
+
+    @GetMapping("/validar-fecha")
+    ValidacionFechaDTO validarFecha(
+            @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fecha,
+            @RequestParam(required = false) Long idCursoAsignatura) {
+        return service.validarFechaAsistencia(fecha, idCursoAsignatura);
     }
 
     @PostMapping()
